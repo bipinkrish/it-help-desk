@@ -17,6 +17,7 @@ import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
 import type { AppConfig } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import TicketsModal from '@/components/TicketsModal';
 
 function isAgentAvailable(agentState: AgentState) {
   return agentState == 'listening' || agentState == 'thinking' || agentState == 'speaking';
@@ -69,6 +70,8 @@ export const SessionView = ({
     supportsVideoInput,
     supportsScreenShare,
   };
+
+  const [ticketsOpen, setTicketsOpen] = useState(false);
 
   return (
     <section
@@ -145,16 +148,27 @@ export const SessionView = ({
               </motion.div>
             )}
 
-            <AgentControlBar
+            <div className="flex items-center justify-between gap-3">
+              <AgentControlBar
               capabilities={capabilities}
               onChatOpenChange={setChatOpen}
               onSendMessage={handleSendMessage}
-            />
+              />
+              <button
+                type="button"
+                onClick={() => setTicketsOpen(true)}
+                className="rounded-md border bg-muted px-3 py-2 text-sm font-medium hover:bg-muted/70"
+              >
+                View tickets
+              </button>
+            </div>
           </div>
           {/* skrim */}
           <div className="from-background border-background absolute top-0 left-0 h-12 w-full -translate-y-full bg-gradient-to-t to-transparent" />
         </motion.div>
       </div>
+
+      <TicketsModal open={ticketsOpen} onClose={() => setTicketsOpen(false)} />
     </section>
   );
 };

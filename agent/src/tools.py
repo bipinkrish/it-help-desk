@@ -3,6 +3,8 @@
 from typing import Dict, Any, Optional
 from models import Ticket, TicketDatabase, identify_issue, get_issue_price
 import logging
+import os
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -37,29 +39,24 @@ class TicketTools:
                     "error": "Sorry, we don't support that type of issue. We handle: Wi-Fi problems ($20), Email login issues ($15), Slow laptop performance ($25), and Printer problems ($10)."
                 }
             
-            # Create the ticket
-            ticket = Ticket(
-                name=name,
-                email=email,
-                phone=phone,
-                address=address,
-                issue=issue_info["description"],
-                price=issue_info["price"]
-            )
-            
-            ticket_id, confirmation_number = self.db.create_ticket(ticket)
-            self.current_ticket = ticket
-            
-            logger.info(f"Created ticket {ticket_id} with confirmation {confirmation_number} for {name} ({email})")
-            
-            return {
-                "success": True,
-                "ticket_id": ticket_id,
-                "confirmation_number": confirmation_number,
+            # Send to Next.js API
+            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
+            url = f"{base_url}/tickets"
+            payload = {
+                "name": name,
                 "email": email,
-                "issue": issue_info["description"],
-                "price": issue_info["price"]
+                "phone": phone,
+                "address": address,
+                "issue_description": issue_info["description"],
             }
+            logger.info(f"[HTTP] POST {url} payload={payload}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    text = await resp.text()
+                    logger.info(f"[HTTP] <- {resp.status} {text[:300]}")
+                    if resp.status != 200:
+                        return {"success": False, "error": "API error while creating ticket"}
+                    return {"success": True, **(await resp.json())}
             
         except Exception as e:
             logger.error(f"Error creating ticket: {e}")
@@ -101,37 +98,17 @@ class TicketTools:
                 updates["issue"] = issue_info["description"]
                 updates["price"] = issue_info["price"]
             
-            # Update the ticket
-            success = self.db.update_ticket(ticket_id, updates)
-            
-            if success:
-                # Update current ticket if it's the same one
-                if self.current_ticket and self.current_ticket.id == ticket_id:
-                    if field == "name":
-                        self.current_ticket.name = value
-                    elif field == "email":
-                        self.current_ticket.email = value
-                    elif field == "phone":
-                        self.current_ticket.phone = value
-                    elif field == "address":
-                        self.current_ticket.address = value
-                    elif field == "issue":
-                        self.current_ticket.issue = issue_info["description"]
-                        self.current_ticket.price = issue_info["price"]
-                
-                logger.info(f"Updated ticket {ticket_id} field {field}")
-                
-                return {
-                    "success": True,
-                    "field": field,
-                    "value": value,
-                    "updated_price": updates.get("price")
-                }
-            else:
-                return {
-                    "success": False,
-                    "error": "Ticket not found or could not be updated"
-                }
+            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
+            url = f"{base_url}/tickets/update-by-id"
+            payload = {"ticket_id": ticket_id, "field": field, "value": value}
+            logger.info(f"[HTTP] POST {url} payload={payload}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    text = await resp.text()
+                    logger.info(f"[HTTP] <- {resp.status} {text[:300]}")
+                    if resp.status != 200:
+                        return {"success": False, "error": "API error while editing ticket"}
+                    return await resp.json()
                 
         except Exception as e:
             logger.error(f"Error editing ticket: {e}")
@@ -180,29 +157,17 @@ class TicketTools:
         Look up an existing ticket by customer details and confirmation number.
         """
         try:
-            ticket = self.db.find_ticket_by_customer(name, email, confirmation_number)
-            
-            if ticket:
-                logger.info(f"Found ticket {ticket.id} for {name} ({email})")
-                return {
-                    "success": True,
-                    "ticket": {
-                        "id": ticket.id,
-                        "name": ticket.name,
-                        "email": ticket.email,
-                        "phone": ticket.phone,
-                        "address": ticket.address,
-                        "issue": ticket.issue,
-                        "price": ticket.price,
-                        "created_at": ticket.created_at
-                    },
-                    "message": f"Found your ticket! Your issue is: {ticket.issue} for ${ticket.price}"
-                }
-            else:
-                return {
-                    "success": False,
-                    "error": "Sorry, I couldn't find a ticket with those details. Please check your name, email, and confirmation number."
-                }
+            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
+            url = f"{base_url}/tickets/lookup"
+            payload = {"name": name, "email": email, "confirmation_number": confirmation_number}
+            logger.info(f"[HTTP] POST {url} payload={payload}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    text = await resp.text()
+                    logger.info(f"[HTTP] <- {resp.status} {text[:300]}")
+                    if resp.status != 200:
+                        return {"success": False, "error": "API error while looking up ticket"}
+                    return await resp.json()
                 
         except Exception as e:
             logger.error(f"Error looking up ticket: {e}")
@@ -216,57 +181,17 @@ class TicketTools:
         Update an existing ticket field.
         """
         try:
-            # First, find the ticket
-            ticket = self.db.find_ticket_by_customer(name, email, confirmation_number)
-            
-            if not ticket:
-                return {
-                    "success": False,
-                    "error": "Sorry, I couldn't find a ticket with those details. Please check your name, email, and confirmation number."
-                }
-            
-            # Prepare updates
-            updates = {}
-            
-            if field == "phone":
-                updates["phone"] = value
-            elif field == "address":
-                updates["address"] = value
-            elif field == "issue":
-                # Re-identify the issue and update pricing
-                issue_info = identify_issue(value)
-                if issue_info:
-                    updates["issue"] = issue_info["description"]
-                    updates["price"] = issue_info["price"]
-                else:
-                    return {
-                        "success": False,
-                        "error": "Sorry, I couldn't identify that IT issue. Please describe a common problem like Wi-Fi, email, performance, or printer issues."
-                    }
-            else:
-                return {
-                    "success": False,
-                    "error": f"Sorry, I can't update the '{field}' field. You can update your phone number, address, or issue description."
-                }
-            
-            # Update the ticket
-            success = self.db.update_ticket(ticket.id, updates)
-            
-            if success:
-                logger.info(f"Updated ticket {ticket.id} field {field} for {name} ({email})")
-                
-                return {
-                    "success": True,
-                    "field": field,
-                    "value": value,
-                    "ticket_id": ticket.id,
-                    "message": f"Perfect! I've updated your {field}. Your ticket has been modified successfully."
-                }
-            else:
-                return {
-                    "success": False,
-                    "error": "Sorry, there was an error updating your ticket. Please try again."
-                }
+            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
+            url = f"{base_url}/tickets/update"
+            payload = {"name": name, "email": email, "confirmation_number": confirmation_number, "field": field, "value": value}
+            logger.info(f"[HTTP] POST {url} payload={payload}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    text = await resp.text()
+                    logger.info(f"[HTTP] <- {resp.status} {text[:300]}")
+                    if resp.status != 200:
+                        return {"success": False, "error": "API error while updating ticket"}
+                    return await resp.json()
                 
         except Exception as e:
             logger.error(f"Error updating ticket: {e}")
