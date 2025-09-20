@@ -20,9 +20,11 @@ jobs:
       with:
         python-version: '3.11'
         
-    - name: Install LiveKit CLI
+    - name: Download and Install LiveKit CLI
       run: |
-        pip install livekit-cli
+        wget https://github.com/livekit/livekit-cli/releases/latest/download/livekit-cli-linux-amd64
+        chmod +x livekit-cli-linux-amd64
+        sudo mv livekit-cli-linux-amd64 /usr/local/bin/lk
         
     - name: Configure LiveKit CLI
       run: |
