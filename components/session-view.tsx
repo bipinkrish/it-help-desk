@@ -51,7 +51,6 @@ export const SessionView = ({
     if (sessionStarted) {
       const timeout = setTimeout(() => {
         if (!isAgentAvailable(agentState)) {
-
           toastAlert({
             title: 'Session ended',
             description: null,
