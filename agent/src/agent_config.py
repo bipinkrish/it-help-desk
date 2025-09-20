@@ -59,7 +59,7 @@ SUPPORTED_ISSUES = {
 AGENT_CONFIG = {
     "stt": "nova-2",
     "language": "en",
-    "llm": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "llm": "openai/gpt-oss-120b",
     "tts": "sonic-2",
     "voice": "f786b574-daa5-4673-aa0c-cbe3e8534c02",
 }

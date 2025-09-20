@@ -108,13 +108,13 @@ export function AgentControlBar({
           inert={!chatOpen}
           className={cn(
             'overflow-hidden transition-[height] duration-300 ease-out',
-            chatOpen ? 'h-[57px]' : 'h-0'
+            // chatOpen ? 'h-[57px]' : 'h-0'
           )}
         >
-          <div className="flex h-8 w-full">
+          {/* <div className="flex h-8 w-full">
             <ChatInput onSend={handleSendMessage} disabled={isInputDisabled} className="w-full" />
           </div>
-          <hr className="border-bg2 my-3" />
+          <hr className="border-bg2 my-3" /> */}
         </div>
       )}
 
@@ -163,7 +163,7 @@ export function AgentControlBar({
             </div>
           )}
 
-          {capabilities.supportsVideoInput && visibleControls.camera && (
+          {/* {capabilities.supportsVideoInput && visibleControls.camera && (
             <div className="flex items-center gap-0">
               <TrackToggle
                 variant="primary"
@@ -190,9 +190,9 @@ export function AgentControlBar({
                 ])}
               />
             </div>
-          )}
+          )} */}
 
-          {capabilities.supportsScreenShare && visibleControls.screenShare && (
+          {/* {capabilities.supportsScreenShare && visibleControls.screenShare && (
             <div className="flex items-center gap-0">
               <TrackToggle
                 variant="secondary"
@@ -203,7 +203,7 @@ export function AgentControlBar({
                 className="relative w-auto"
               />
             </div>
-          )}
+          )} */}
 
           {visibleControls.chat && (
             <Toggle
