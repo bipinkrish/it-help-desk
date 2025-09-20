@@ -4,7 +4,6 @@ from livekit import agents
 from livekit.agents import AgentSession, Agent
 from livekit.plugins import (
     groq,
-    cartesia,
     deepgram,
 )
 
@@ -21,9 +20,9 @@ async def entrypoint(ctx: agents.JobContext):
     
     # Create agent session with STT-LLM-TTS pipeline (cloud-based)
     session = AgentSession(
-        stt=deepgram.STT(model=AGENT_CONFIG["stt"], language=AGENT_CONFIG["language"]),
-        llm=groq.LLM(model=AGENT_CONFIG["llm"]),
-        tts=cartesia.TTS(model=AGENT_CONFIG["tts"], voice=AGENT_CONFIG["voice"]),
+        stt=deepgram.STT(model=AGENT_CONFIG["stt_model"], language="en"),
+        llm=groq.LLM(model=AGENT_CONFIG["llm_model"]),
+        tts=deepgram.TTS(model=AGENT_CONFIG["tts_model"]),
     )
 
     # Start the session

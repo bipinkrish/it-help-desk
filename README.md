@@ -16,13 +16,13 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 - Node.js 18+
 - Python 3.11+
 - LiveKit Cloud account (free)
-- API keys for Groq, Deepgram, and Cartesia
+- API keys for Groq, Deepgram
 
 ## 🏗️ Architecture
 
 ```
 [ React Frontend ] ←→ [ LiveKit Cloud ] ←→ [ Python Agent ]
-     (Port 3000)         (Real-time)         (Groq + Deepgram + Cartesia)
+     (Port 3000)         (Real-time)         (Groq + Deepgra)
 ```
 
 ## Get API Keys
@@ -32,12 +32,8 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 - Sign up (no credit card required)
 - Create API key
 
-**Deepgram (Speech-to-Text):**
+**Deepgram (Speech-to-Text and Text-to-Speech):**
 - Go to [deepgram.com](https://deepgram.com)
-- Sign up and get API key
-
-**Cartesia (Text-to-Speech):**
-- Go to [cartesia.ai](https://cartesia.ai)
 - Sign up and get API key
 
 **LiveKit Cloud:**
@@ -82,7 +78,6 @@ The project includes GitHub Actions for automatic deployment:
 - `LIVEKIT_API_SECRET`
 - `DEEPGRAM_API_KEY`
 - `GROQ_API_KEY`
-- `CARTESIA_API_KEY`
 - `DATABASE_URL`
 
 ## 🔧 Manual Setup
@@ -123,4 +118,3 @@ npm run dev
 - [LiveKit Cloud](https://cloud.livekit.io/)
 - [Groq API](https://console.groq.com/)
 - [Deepgram API](https://deepgram.com/)
-- [Cartesia API](https://cartesia.ai/)
