@@ -50,6 +50,11 @@ jobs:
         DATABASE_URL=sqlite:///./tickets.db
         EOF
         
+    - name: Create agent if it doesn't exist
+      run: |
+        cd agent
+        lk agent create --secrets-file secrets.env || echo "Agent already exists or creation failed"
+        
     - name: Deploy agent
       run: |
         cd agent
