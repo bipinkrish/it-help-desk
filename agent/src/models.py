@@ -3,6 +3,8 @@
 import sqlite3
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
+import random
+from agent_config import SUPPORTED_ISSUES
 
 
 @dataclass
@@ -46,8 +48,8 @@ class TicketDatabase:
         conn.commit()
         conn.close()
     
-    def create_ticket(self, ticket: Ticket) -> int:
-        """Create a new ticket and return its ID."""
+    def create_ticket(self, ticket: Ticket) -> tuple[int, int]:
+        """Create a new ticket and return (ticket_id, confirmation_number)."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -57,10 +59,12 @@ class TicketDatabase:
         """, (ticket.name, ticket.email, ticket.phone, ticket.address, ticket.issue, ticket.price))
         
         ticket_id = cursor.lastrowid
+        confirmation_number = random.randint(10000, 99999)  # 5-digit random number
+        
         conn.commit()
         conn.close()
         
-        return ticket_id
+        return ticket_id, confirmation_number
     
     def get_ticket(self, ticket_id: int) -> Optional[Ticket]:
         """Get a ticket by ID."""
@@ -161,27 +165,27 @@ class TicketDatabase:
         return deleted
 
 
-# IT Issue configurations with pricing
+# IT Issue configurations with pricing (using centralized config)
 IT_ISSUES = {
     "wifi": {
-        "keywords": ["wifi", "wi-fi", "wireless", "internet", "connection", "network"],
-        "description": "Wi-Fi not working",
-        "price": 20
+        "keywords": ["wifi", "wi-fi", "wireless", "internet", "connection", "network", "connectivity"],
+        "description": SUPPORTED_ISSUES["wifi"]["description"],
+        "price": SUPPORTED_ISSUES["wifi"]["price"]
     },
     "email": {
-        "keywords": ["email", "login", "password", "reset", "account", "access"],
-        "description": "Email login issues - password reset",
-        "price": 15
+        "keywords": ["email", "login", "password", "reset", "account", "access", "signin"],
+        "description": SUPPORTED_ISSUES["email"]["description"],
+        "price": SUPPORTED_ISSUES["email"]["price"]
     },
-    "laptop": {
-        "keywords": ["laptop", "slow", "performance", "cpu", "speed", "computer", "pc"],
-        "description": "Slow laptop performance - CPU change",
-        "price": 25
+    "performance": {
+        "keywords": ["laptop", "slow", "performance", "cpu", "speed", "computer", "pc", "optimization"],
+        "description": SUPPORTED_ISSUES["performance"]["description"],
+        "price": SUPPORTED_ISSUES["performance"]["price"]
     },
     "printer": {
-        "keywords": ["printer", "printing", "power", "plug", "cable", "hardware"],
-        "description": "Printer problems - power plug change",
-        "price": 10
+        "keywords": ["printer", "printing", "power", "plug", "cable", "hardware", "driver"],
+        "description": SUPPORTED_ISSUES["printer"]["description"],
+        "price": SUPPORTED_ISSUES["printer"]["price"]
     }
 }
 

@@ -47,15 +47,15 @@ class TicketTools:
                 price=issue_info["price"]
             )
             
-            ticket_id = self.db.create_ticket(ticket)
+            ticket_id, confirmation_number = self.db.create_ticket(ticket)
             self.current_ticket = ticket
             
-            logger.info(f"Created ticket {ticket_id} for {name} ({email})")
+            logger.info(f"Created ticket {ticket_id} with confirmation {confirmation_number} for {name} ({email})")
             
             return {
                 "success": True,
                 "ticket_id": ticket_id,
-                "confirmation_number": ticket_id,
+                "confirmation_number": confirmation_number,
                 "email": email,
                 "issue": issue_info["description"],
                 "price": issue_info["price"]
