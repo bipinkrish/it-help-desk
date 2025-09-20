@@ -25,8 +25,12 @@ jobs:
         curl -sSL https://get.livekit.io/cli | bash
         
     - name: Configure LiveKit CLI
+      env:
+        LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+        LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+        LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
       run: |
-        lk cloud auth --api-key "${{ secrets.LIVEKIT_API_KEY }}" --api-secret "${{ secrets.LIVEKIT_API_SECRET }}"
+        lk project add it-help-desk --url "$LIVEKIT_URL" --api-key "$LIVEKIT_API_KEY" --api-secret "$LIVEKIT_API_SECRET"
         
     - name: Create secrets file
       run: |
