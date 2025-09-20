@@ -14,7 +14,7 @@ class TicketTools:
         self.db = db
         self.current_ticket: Optional[Ticket] = None
     
-    def create_ticket(self, name: str, email: str, phone: str, address: str, issue_description: str) -> Dict[str, Any]:
+    async def create_ticket(self, name: str, email: str, phone: str, address: str, issue_description: str) -> Dict[str, Any]:
         """
         Create a new support ticket.
         
@@ -68,7 +68,7 @@ class TicketTools:
                 "error": "Sorry, there was an error creating your ticket. Please try again."
             }
     
-    def edit_ticket(self, ticket_id: int, field: str, value: str) -> Dict[str, Any]:
+    async def edit_ticket(self, ticket_id: int, field: str, value: str) -> Dict[str, Any]:
         """
         Edit a ticket field before confirmation.
         
@@ -175,17 +175,9 @@ class TicketTools:
         self.current_ticket = None
         logger.info("Started new ticket session")
     
-    def lookup_ticket(self, name: str, email: str, confirmation_number: int) -> Dict[str, Any]:
+    async def lookup_ticket(self, name: str, email: str, confirmation_number: int) -> Dict[str, Any]:
         """
         Look up an existing ticket by customer details and confirmation number.
-        
-        Args:
-            name: Customer's name
-            email: Customer's email address
-            confirmation_number: 5-digit confirmation number
-            
-        Returns:
-            Dict containing ticket information if found
         """
         try:
             ticket = self.db.find_ticket_by_customer(name, email, confirmation_number)
@@ -219,19 +211,9 @@ class TicketTools:
                 "error": "Sorry, there was an error looking up your ticket. Please try again."
             }
     
-    def update_existing_ticket(self, name: str, email: str, confirmation_number: int, field: str, value: str) -> Dict[str, Any]:
+    async def update_existing_ticket(self, name: str, email: str, confirmation_number: int, field: str, value: str) -> Dict[str, Any]:
         """
         Update an existing ticket field.
-        
-        Args:
-            name: Customer's name
-            email: Customer's email address
-            confirmation_number: 5-digit confirmation number
-            field: Field to update (phone, address, issue)
-            value: New value for the field
-            
-        Returns:
-            Dict containing success status and updated information
         """
         try:
             # First, find the ticket
@@ -293,7 +275,7 @@ class TicketTools:
                 "error": "Sorry, there was an error updating your ticket. Please try again."
             }
 
-    def get_supported_issues(self) -> Dict[str, Any]:
+    async def get_supported_issues(self) -> Dict[str, Any]:
         """Get information about supported IT issues."""
         issues = []
         for issue_type, config in identify_issue.__globals__["IT_ISSUES"].items():

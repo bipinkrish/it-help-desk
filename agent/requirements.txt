@@ -1,2 +1,3 @@
 # LiveKit Agents with STT-LLM-TTS pipeline (cloud-based)
 livekit-agents[deepgram,groq]~=1.2
+typing_extensions>=4.0.0
