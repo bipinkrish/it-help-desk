@@ -15,18 +15,62 @@ export type Ticket = {
 
 type DBShape = { tickets: Ticket[] };
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const DATA_FILE = path.join(DATA_DIR, 'tickets.json');
+let DATA_DIR = process.env.TICKET_DATA_DIR || path.join(process.cwd(), 'data');
+let DATA_FILE = path.join(DATA_DIR, 'tickets.json');
+
+// In-memory fallback for read-only or ephemeral environments
+let MEMORY_DB: DBShape | null = null;
+
+function tryEnsureDir(dir: string) {
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function tryWrite(file: string, data: string) {
+  try {
+    fs.writeFileSync(file, data);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function ensureStore() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify({ tickets: [] } as DBShape, null, 2));
+  // Primary location
+  if (tryEnsureDir(DATA_DIR)) {
+    if (!fs.existsSync(DATA_FILE)) {
+      if (tryWrite(DATA_FILE, JSON.stringify({ tickets: [] } as DBShape, null, 2))) return;
+    } else {
+      return;
+    }
+  }
+
+  // Fallback to /tmp for Vercel/serverless
+  const tmpDir = '/tmp';
+  const tmpFile = path.join(tmpDir, 'tickets.json');
+  if (tryEnsureDir(tmpDir)) {
+    DATA_DIR = tmpDir;
+    DATA_FILE = tmpFile;
+    if (!fs.existsSync(DATA_FILE)) {
+      if (tryWrite(DATA_FILE, JSON.stringify({ tickets: [] } as DBShape, null, 2))) return;
+    } else {
+      return;
+    }
+  }
+
+  // Final fallback: in-memory
+  if (!MEMORY_DB) MEMORY_DB = { tickets: [] };
 }
 
 function readStore(): DBShape {
   ensureStore();
-  const raw = fs.readFileSync(DATA_FILE, 'utf8');
+  if (MEMORY_DB) return MEMORY_DB;
   try {
+    const raw = fs.readFileSync(DATA_FILE, 'utf8');
     return JSON.parse(raw) as DBShape;
   } catch {
     return { tickets: [] };
@@ -35,7 +79,11 @@ function readStore(): DBShape {
 
 function writeStore(db: DBShape) {
   ensureStore();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2));
+  if (MEMORY_DB) {
+    MEMORY_DB = db;
+    return;
+  }
+  tryWrite(DATA_FILE, JSON.stringify(db, null, 2));
 }
 
 export function listTickets(): Ticket[] {
