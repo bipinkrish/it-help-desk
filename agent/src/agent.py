@@ -1,5 +1,6 @@
 """IT Help Desk Voice Bot using LiveKit Agents framework."""
 
+from agent.config import agent_config
 from livekit import agents
 from livekit.agents import AgentSession, Agent
 from livekit.plugins import (
@@ -12,7 +13,7 @@ import os
 
 # Add config directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'config'))
-from agent_config import AGENT_INSTRUCTIONS, INITIAL_GREETING, AgentConfig
+from ..config.agent_config import AGENT_INSTRUCTIONS, INITIAL_GREETING, AGENT_CONFIG
 
 
 class ITHelpDeskAssistant(Agent):
@@ -25,9 +26,9 @@ async def entrypoint(ctx: agents.JobContext):
     
     # Create agent session with STT-LLM-TTS pipeline (cloud-based)
     session = AgentSession(
-        stt=deepgram.STT(model=AgentConfig["stt"], language=AgentConfig["language"]),
-        llm=groq.LLM(model=AgentConfig["llm"]),
-        tts=cartesia.TTS(model=AgentConfig["tts"], voice=AgentConfig["voice"]),
+        stt=deepgram.STT(model=AGENT_CONFIG["stt"], language=AGENT_CONFIG["language"]),
+        llm=groq.LLM(model=AGENT_CONFIG["llm"]),
+        tts=cartesia.TTS(model=AGENT_CONFIG["tts"], voice=AGENT_CONFIG["voice"]),
     )
 
     # Start the session

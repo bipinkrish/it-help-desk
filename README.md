@@ -1,14 +1,15 @@
-# IT Help Desk Voice Bot
+# IT Help Desk Voice Bot 🎤
 
-A real-time IT Help Desk Voice Bot that handles support calls through natural voice conversations using LiveKit Cloud and AI models.
+A real-time AI-powered IT Help Desk that handles support calls through natural voice conversations using LiveKit Cloud and modern AI models.
 
-## 🎯 Features
+## ✨ Features
 
 - 🎤 **Real-time voice conversation** using LiveKit Cloud
 - 🤖 **AI-powered conversation** (STT → LLM → TTS pipeline)
 - 💰 **Fixed pricing** for 4 supported IT issues
-- 🌐 **Modern React frontend** with shadcn/ui
+- 🌐 **Modern React frontend** with Next.js and shadcn/ui
 - ☁️ **Cloud-based deployment** (no local server needed)
+- 🔄 **Auto-deployment** via GitHub Actions
 
 ## 📋 Supported IT Issues & Pricing
 
@@ -23,6 +24,7 @@ A real-time IT Help Desk Voice Bot that handles support calls through natural vo
 
 ### Prerequisites
 - Node.js 18+
+- Python 3.11+
 - LiveKit Cloud account (free)
 - API keys for Groq, Deepgram, and Cartesia
 
@@ -45,9 +47,14 @@ A real-time IT Help Desk Voice Bot that handles support calls through natural vo
 - Go to [cloud.livekit.io](https://cloud.livekit.io)
 - Create project and get credentials
 
-### 2. Configure Secrets
+### 2. Configure Environment
 
-Create `backend/secrets.env`:
+Copy the example environment file:
+```bash
+cp env.example .env
+```
+
+Edit `.env` with your API keys:
 ```env
 # LiveKit Cloud Configuration
 LIVEKIT_URL=wss://your-project.livekit.cloud
@@ -86,55 +93,78 @@ This will:
      (Port 3000)         (Real-time)         (Groq + Deepgram + Cartesia)
 ```
 
-## 🔧 Manual Setup (Alternative)
-
-If you prefer manual setup:
-
-```bash
-# Deploy agent
-cd backend
-lk agent deploy --secrets-file secrets.env
-
-# Start frontend  
-cd ../frontend
-npm install
-npm run dev
-```
-
 ## 📁 Project Structure
 
 ```
 it-help-desk/
-├── backend/                    # Python agent (deployed to LiveKit Cloud)
-│   ├── src/                   # Agent source code (logic only)
-│   │   ├── agent.py          # Main agent logic
-│   │   ├── models.py         # Database models
-│   │   └── tools.py          # Agent tools
-│   ├── config/               # Configuration files
-│   │   └── agent_instructions.py # Agent prompts & settings
-│   ├── secrets.env           # API keys (not committed)
-│   └── Dockerfile            # For deployment
-├── frontend/                  # Official LiveKit React starter
-│   ├── app/                  # Next.js app directory
-│   ├── components/           # React components
-│   └── .env.local           # Frontend config (auto-created)
-├── deploy.sh                 # One-click deployment script
-└── README.md                # This file
+├── agent/                       # Python agent (deployed to LiveKit Cloud)
+│   ├── src/                    # Agent source code
+│   │   ├── agent.py           # Main agent logic
+│   │   ├── models.py          # Database models
+│   │   └── tools.py           # Agent tools (create_ticket, edit_ticket)
+│   ├── config/                # Configuration files
+│   │   └── agent_config.py    # Model settings and Agent prompts
+│   ├── env.example           # Environment template
+│   ├── Dockerfile            # For deployment
+│   └── livekit.toml          # LiveKit configuration
+├── app/                       # Next.js frontend
+│   ├── api/                  # API routes
+│   └── components/           # React components
+├── components/               # Shared UI components
+├── .github/workflows/        # GitHub Actions
+├── .env.example             # Environment template
+├── deploy.sh                # One-click deployment
+└── README.md               # This file
+```
+
+## 🔄 Auto-Deployment
+
+The project includes GitHub Actions for automatic deployment:
+
+- **Trigger**: Push to `main` branch
+- **Action**: Automatically deploys agent to LiveKit Cloud
+- **Setup**: Add secrets to GitHub repository
+
+### Required GitHub Secrets:
+- `LIVEKIT_URL`
+- `LIVEKIT_API_KEY`
+- `LIVEKIT_API_SECRET`
+- `DEEPGRAM_API_KEY`
+- `GROQ_API_KEY`
+- `CARTESIA_API_KEY`
+
+## 🔧 Manual Setup
+
+If you prefer manual setup:
+
+```bash
+# Install dependencies
+npm install
+
+# Deploy agent
+cd agent
+lk agent deploy --secrets-file ../.env
+
+# Start frontend  
+npm run dev
 ```
 
 ## 🆘 Troubleshooting
 
 **Agent not responding?**
 - Check `lk agent logs` for errors
-- Verify API keys in `backend/secrets.env`
+- Verify API keys in `.env`
+- Ensure agent is deployed: `lk agent status`
 
 **Frontend not connecting?**
 - Ensure agent is deployed: `lk agent status`
 - Check browser console for errors
+- Verify LiveKit credentials
 
 **No audio?**
 - Allow microphone permissions in browser
 - Check if agent is running: `lk agent status`
+- Verify STT/TTS API keys
 
 ## 📚 Learn More
 

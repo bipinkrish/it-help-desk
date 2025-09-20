@@ -30,7 +30,7 @@ const animationProps = {
     scale: 0,
   },
   transition: {
-    type: 'spring',
+    type: 'spring' as const,
     stiffness: 675,
     damping: 75,
     mass: 1,
@@ -103,21 +103,27 @@ export function MediaTiles({ chatOpen }: MediaTilesProps) {
   const isScreenShareEnabled = screenShareTrack && !screenShareTrack.publication.isMuted;
   const hasSecondTile = isCameraEnabled || isScreenShareEnabled;
 
-  const transition = {
-    ...animationProps.transition,
-    delay: chatOpen ? 0 : 0.15, // delay on close
-  };
   const agentAnimate = {
     ...animationProps.animate,
     scale: chatOpen ? 1 : 3,
-    transition,
   };
   const avatarAnimate = {
     ...animationProps.animate,
-    transition,
   };
-  const agentLayoutTransition = transition;
-  const avatarLayoutTransition = transition;
+  const agentLayoutTransition = {
+    type: 'spring' as const,
+    stiffness: 675,
+    damping: 75,
+    mass: 1,
+    delay: chatOpen ? 0 : 0.15,
+  };
+  const avatarLayoutTransition = {
+    type: 'spring' as const,
+    stiffness: 675,
+    damping: 75,
+    mass: 1,
+    delay: chatOpen ? 0 : 0.15,
+  };
 
   const isAvatar = agentVideoTrack !== undefined;
 

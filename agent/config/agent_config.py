@@ -1,3 +1,5 @@
+"""Agent instructions and configuration for IT Help Desk Voice Bot."""
+
 # Agent system instructions
 AGENT_INSTRUCTIONS = """
 You are an IT Help Desk AI assistant. You help customers with common IT issues.
@@ -25,8 +27,31 @@ Be helpful, professional, and clear about pricing.
 # Initial greeting message
 INITIAL_GREETING = "Greet the customer and ask how you can help with their IT issue today."
 
-# Agent configuration
-AgentConfig = {
+# Supported IT issues configuration
+SUPPORTED_ISSUES = {
+    "wifi": {
+        "name": "Wi-Fi problems",
+        "description": "Network connectivity issues",
+        "price": 20
+    },
+    "email": {
+        "name": "Email login issues", 
+        "description": "Password reset and login problems",
+        "price": 15
+    },
+    "performance": {
+        "name": "Slow laptop performance",
+        "description": "CPU upgrade and optimization", 
+        "price": 25
+    },
+    "printer": {
+        "name": "Printer problems",
+        "description": "Hardware and driver issues",
+        "price": 10
+    }
+}
+
+AGENT_CONFIG = {
     "stt": "nova-2",
     "language": "en",
     "llm": "openai/gpt-oss-120b",

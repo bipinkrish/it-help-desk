@@ -7,7 +7,7 @@ interface AppLayoutProps {
 
 export default async function AppLayout({ children }: AppLayoutProps) {
   const hdrs = await headers();
-  const { companyName } = await getAppConfig(hdrs);
+  await getAppConfig(hdrs);
 
   return (
     <>
