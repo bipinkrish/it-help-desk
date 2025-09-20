@@ -8,7 +8,6 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 - 🤖 **AI-powered conversation** (STT → LLM → TTS pipeline)
 - 🌐 **Modern React frontend** with Next.js and shadcn/ui
 - ☁️ **Cloud-based deployment** (no local server needed)
-- 🔄 **Auto-deployment** via GitHub Actions
 
 ## 🚀 Quick Start
 
@@ -63,22 +62,6 @@ it-help-desk/
 ├── deploy.sh                # One-click deployment
 └── README.md               # This file
 ```
-
-## 🔄 Auto-Deployment
-
-The project includes GitHub Actions for automatic deployment:
-
-- **Trigger**: Push to `main` branch
-- **Action**: Automatically deploys agent to LiveKit Cloud
-- **Setup**: Add secrets to GitHub repository
-
-### Required GitHub Secrets:
-- `LIVEKIT_URL`
-- `LIVEKIT_API_KEY`
-- `LIVEKIT_API_SECRET`
-- `DEEPGRAM_API_KEY`
-- `GROQ_API_KEY`
-- `DATABASE_URL`
 
 ## 🔧 Manual Setup
 

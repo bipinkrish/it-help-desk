@@ -41,9 +41,17 @@ class TicketDatabase:
                 address TEXT,
                 issue TEXT,
                 price INTEGER,
+                confirmation_number INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        
+        # Add confirmation_number column if it doesn't exist (for existing databases)
+        try:
+            cursor.execute("ALTER TABLE tickets ADD COLUMN confirmation_number INTEGER")
+        except sqlite3.OperationalError:
+            # Column already exists
+            pass
         
         conn.commit()
         conn.close()
@@ -53,13 +61,14 @@ class TicketDatabase:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
+        confirmation_number = random.randint(10000, 99999)  # 5-digit random number
+        
         cursor.execute("""
-            INSERT INTO tickets (name, email, phone, address, issue, price)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (ticket.name, ticket.email, ticket.phone, ticket.address, ticket.issue, ticket.price))
+            INSERT INTO tickets (name, email, phone, address, issue, price, confirmation_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (ticket.name, ticket.email, ticket.phone, ticket.address, ticket.issue, ticket.price, confirmation_number))
         
         ticket_id = cursor.lastrowid
-        confirmation_number = random.randint(10000, 99999)  # 5-digit random number
         
         conn.commit()
         conn.close()
@@ -163,6 +172,35 @@ class TicketDatabase:
         conn.close()
         
         return deleted
+    
+    def find_ticket_by_customer(self, name: str, email: str, confirmation_number: int) -> Optional[Ticket]:
+        """Find a ticket by customer name, email, and confirmation number."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, name, email, phone, address, issue, price, confirmation_number, created_at
+            FROM tickets WHERE LOWER(name) = LOWER(?) AND LOWER(email) = LOWER(?) AND confirmation_number = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (name, email, confirmation_number))
+        
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            return Ticket(
+                id=row[0],
+                name=row[1],
+                email=row[2],
+                phone=row[3],
+                address=row[4],
+                issue=row[5],
+                price=row[6],
+                created_at=row[7]
+            )
+        
+        return None
 
 
 # IT Issue configurations with pricing (using centralized config)
