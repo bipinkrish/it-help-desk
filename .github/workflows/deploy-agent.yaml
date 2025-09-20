@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'agent/**'
-      - '.github/workflows/deploy-agent.yml'
+      - '.github/workflows/deploy-agent.yaml'
 
 jobs:
   deploy:
@@ -26,8 +26,7 @@ jobs:
         
     - name: Configure LiveKit CLI
       run: |
-        echo "${{ secrets.LIVEKIT_API_KEY }}" | lk cloud auth --api-key
-        echo "${{ secrets.LIVEKIT_API_SECRET }}" | lk cloud auth --api-secret
+        lk cloud auth --api-key "${{ secrets.LIVEKIT_API_KEY }}" --api-secret "${{ secrets.LIVEKIT_API_SECRET }}"
         
     - name: Create secrets file
       run: |
