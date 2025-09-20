@@ -22,9 +22,7 @@ jobs:
         
     - name: Download and Install LiveKit CLI
       run: |
-        wget https://github.com/livekit/livekit-cli/releases/latest/download/livekit-cli-linux-amd64
-        chmod +x livekit-cli-linux-amd64
-        sudo mv livekit-cli-linux-amd64 /usr/local/bin/lk
+        curl -sSL https://get.livekit.io/cli | bash
         
     - name: Configure LiveKit CLI
       run: |
