@@ -54,7 +54,7 @@ A real-time IT Help Desk Voice Bot that handles support calls through natural vo
 ### Prerequisites
 - Node.js 18+
 - Python 3.9+
-- LiveKit Cloud account
+- LiveKit Cloud account (free trial available)
 
 ### Installation
 
@@ -76,7 +76,11 @@ cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env.local
 ```
 
-4. Configure your LiveKit credentials in `backend/.env`:
+4. Get your LiveKit Cloud credentials and configure them in `backend/.env`:
+   - Go to [LiveKit Cloud](https://cloud.livekit.io/)
+   - Create a new project or use existing one
+   - Copy your Project URL, API Key, and API Secret
+   - Update `backend/.env` with your credentials:
 ```env
 LIVEKIT_URL=wss://your-project.livekit.cloud
 LIVEKIT_API_KEY=your-api-key
@@ -85,10 +89,20 @@ LIVEKIT_API_SECRET=your-api-secret
 
 5. Start development servers:
 ```bash
-npm run dev
+# Terminal 1: Backend server
+cd backend && source venv/bin/activate && python run_server.py
+
+# Terminal 2: Frontend
+cd frontend && npm run dev
+
+# Terminal 3: LiveKit agent
+cd backend && source venv/bin/activate && python run_agent.py
 ```
 
-This will start both the frontend (http://localhost:3000) and backend (http://localhost:8000).
+This will start:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- LiveKit Agent: Connected to LiveKit Cloud
 
 ## Usage
 

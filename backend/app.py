@@ -8,7 +8,6 @@ import os
 from dotenv import load_dotenv
 import logging
 from livekit import api
-from livekit.plugins import openai
 
 from models import TicketDatabase
 from tools import TicketTools

@@ -40,7 +40,9 @@ cd ..
 # Install backend dependencies
 echo "📦 Installing backend dependencies..."
 cd backend
-pip3 install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 cd ..
 
 # Create environment files if they don't exist
@@ -48,14 +50,25 @@ echo "⚙️  Setting up environment files..."
 
 if [ ! -f "backend/.env" ]; then
     echo "📝 Creating backend/.env from template..."
-    cp backend/env.example backend/.env
-    echo "⚠️  Please edit backend/.env with your LiveKit credentials"
+    cat > backend/.env << 'EOF'
+# LiveKit Cloud Configuration
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your-api-key
+LIVEKIT_API_SECRET=your-api-secret
+
+# Database
+DATABASE_URL=sqlite:///./tickets.db
+
+# OpenAI (optional - for better LLM performance)
+# OPENAI_API_KEY=your-openai-key
+EOF
+    echo "⚠️  Created backend/.env template - YOU MUST UPDATE WITH YOUR LIVEKIT CLOUD CREDENTIALS"
 fi
 
 if [ ! -f "frontend/.env.local" ]; then
     echo "📝 Creating frontend/.env.local from template..."
     cp frontend/env.example frontend/.env.local
-    echo "⚠️  Please edit frontend/.env.local if needed"
+    echo "✅ Created frontend/.env.local"
 fi
 
 # Make scripts executable
@@ -65,18 +78,25 @@ chmod +x backend/run_server.py
 echo "✅ Setup completed successfully!"
 echo ""
 echo "🎯 Next steps:"
-echo "1. Edit backend/.env with your LiveKit credentials:"
+echo "1. Get your LiveKit Cloud credentials:"
+echo "   - Go to https://cloud.livekit.io/"
+echo "   - Create a new project or use existing one"
+echo "   - Copy your Project URL, API Key, and API Secret"
+echo ""
+echo "2. Update backend/.env with your LiveKit Cloud credentials:"
 echo "   - LIVEKIT_URL=wss://your-project.livekit.cloud"
 echo "   - LIVEKIT_API_KEY=your-api-key"
 echo "   - LIVEKIT_API_SECRET=your-api-secret"
 echo ""
-echo "2. Start the development servers:"
-echo "   npm run dev"
+echo "3. In a new terminal, start the backend server:"
+echo "   cd backend && source venv/bin/activate && python run_server.py"
 echo ""
-echo "3. Or start them separately:"
-echo "   Backend: cd backend && python run_server.py"
-echo "   Frontend: cd frontend && npm run dev"
+echo "4. In another new terminal, start the frontend:"
+echo "   cd frontend && npm run dev"
 echo ""
-echo "4. Open http://localhost:3000 in your browser"
+echo "5. In another new terminal, start the LiveKit agent:"
+echo "   cd backend && source venv/bin/activate && python run_agent.py"
 echo ""
-echo "📚 For more information, see the README.md file"
+echo "6. Open http://localhost:3000 in your browser"
+echo ""
+echo "📚 For production deployment, see DEPLOYMENT.md"
