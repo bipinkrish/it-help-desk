@@ -39,7 +39,7 @@ cd agent
 # Check if secrets.env exists
 if [ ! -f "../.env" ]; then
     echo "❌ .env not found in root directory"
-    echo "Please create agent/secrets.env with your API keys:"
+    echo "Please create .env with your API keys:"
     exit 1
 fi
 
@@ -47,24 +47,3 @@ fi
 lk agent deploy --secrets-file ../.env
 
 echo "✅ Agent deployed successfully!"
-
-# Go back to root and start frontend
-cd ..
-echo "🌐 Starting frontend..."
-
-# Install dependencies if needed
-if [ ! -d "node_modules" ]; then
-    echo "📦 Installing dependencies..."
-    if command_exists "pnpm"; then
-        pnpm install
-    else
-        npm install
-    fi
-fi
-
-# Start the Web App
-if command_exists "pnpm"; then
-    pnpm start
-else
-    npm run start
-fi

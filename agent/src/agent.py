@@ -1,6 +1,5 @@
 """IT Help Desk Voice Bot using LiveKit Agents framework."""
 
-from agent.config import agent_config
 from livekit import agents
 from livekit.agents import AgentSession, Agent
 from livekit.plugins import (
@@ -8,12 +7,8 @@ from livekit.plugins import (
     cartesia,
     deepgram,
 )
-import sys
-import os
 
-# Add config directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'config'))
-from ..config.agent_config import AGENT_INSTRUCTIONS, INITIAL_GREETING, AGENT_CONFIG
+from agent_config import AGENT_INSTRUCTIONS, INITIAL_GREETING, AGENT_CONFIG
 
 
 class ITHelpDeskAssistant(Agent):

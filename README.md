@@ -6,19 +6,9 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 
 - 🎤 **Real-time voice conversation** using LiveKit Cloud
 - 🤖 **AI-powered conversation** (STT → LLM → TTS pipeline)
-- 💰 **Fixed pricing** for 4 supported IT issues
 - 🌐 **Modern React frontend** with Next.js and shadcn/ui
 - ☁️ **Cloud-based deployment** (no local server needed)
 - 🔄 **Auto-deployment** via GitHub Actions
-
-## 📋 Supported IT Issues & Pricing
-
-| Issue | Price | Description |
-|-------|-------|-------------|
-| Wi-Fi problems | $20 | Network connectivity issues |
-| Email login issues | $15 | Password reset and login problems |
-| Slow laptop performance | $25 | CPU upgrade and optimization |
-| Printer problems | $10 | Hardware and driver issues |
 
 ## 🚀 Quick Start
 
@@ -28,7 +18,14 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 - LiveKit Cloud account (free)
 - API keys for Groq, Deepgram, and Cartesia
 
-### 1. Get API Keys
+## 🏗️ Architecture
+
+```
+[ React Frontend ] ←→ [ LiveKit Cloud ] ←→ [ Python Agent ]
+     (Port 3000)         (Real-time)         (Groq + Deepgram + Cartesia)
+```
+
+## Get API Keys
 
 **Groq (Free LLM):**
 - Go to [console.groq.com](https://console.groq.com)
@@ -46,52 +43,6 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 **LiveKit Cloud:**
 - Go to [cloud.livekit.io](https://cloud.livekit.io)
 - Create project and get credentials
-
-### 2. Configure Environment
-
-Copy the example environment file:
-```bash
-cp env.example .env
-```
-
-Edit `.env` with your API keys:
-```env
-# LiveKit Cloud Configuration
-LIVEKIT_URL=wss://your-project.livekit.cloud
-LIVEKIT_API_KEY=your_api_key
-LIVEKIT_API_SECRET=your_api_secret
-
-# AI Provider Configuration
-GROQ_API_KEY=your_groq_key
-DEEPGRAM_API_KEY=your_deepgram_key
-CARTESIA_API_KEY=your_cartesia_key
-```
-
-### 3. Deploy Everything
-
-Run the deployment script:
-```bash
-./deploy.sh
-```
-
-This will:
-1. ✅ Deploy the agent to LiveKit Cloud
-2. ✅ Start the React frontend
-3. ✅ Open http://localhost:3000
-
-## 🎮 Usage
-
-1. **Open** http://localhost:3000
-2. **Click** "Start Call" 
-3. **Talk** to the IT Help Desk bot
-4. **Follow** the conversation flow to create support tickets
-
-## 🏗️ Architecture
-
-```
-[ React Frontend ] ←→ [ LiveKit Cloud ] ←→ [ Python Agent ]
-     (Port 3000)         (Real-time)         (Groq + Deepgram + Cartesia)
-```
 
 ## 📁 Project Structure
 
@@ -132,18 +83,18 @@ The project includes GitHub Actions for automatic deployment:
 - `DEEPGRAM_API_KEY`
 - `GROQ_API_KEY`
 - `CARTESIA_API_KEY`
+- `DATABASE_URL`
 
 ## 🔧 Manual Setup
 
 If you prefer manual setup:
 
 ```bash
+# Deploy agent
+./deploy.sh
+
 # Install dependencies
 npm install
-
-# Deploy agent
-cd agent
-lk agent deploy --secrets-file ../.env
 
 # Start frontend  
 npm run dev
@@ -173,7 +124,3 @@ npm run dev
 - [Groq API](https://console.groq.com/)
 - [Deepgram API](https://deepgram.com/)
 - [Cartesia API](https://cartesia.ai/)
-
-## 📄 License
-
-MIT License - see LICENSE file for details.
