@@ -47,5 +47,3 @@ class SupportedIssueItem(TypedDict):
 class SupportedIssuesResponse(TypedDict):
     success: Literal[True]
     issues: List[SupportedIssueItem]
-
-
