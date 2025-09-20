@@ -1,0 +1,2 @@
+# LiveKit Agents with STT-LLM-TTS pipeline (cloud-based)
+livekit-agents[deepgram,groq,cartesia]~=1.2

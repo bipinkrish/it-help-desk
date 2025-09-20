@@ -1,14 +1,14 @@
 # Dependencies
 node_modules/
-frontend/node_modules/
-backend/__pycache__/
-backend/*.pyc
-backend/*.pyo
-backend/*.pyd
-backend/.Python
-backend/env/
-backend/venv/
-backend/.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.next/
 
 # Environment variables
 .env
@@ -16,21 +16,21 @@ backend/.venv/
 .env.development.local
 .env.test.local
 .env.production.local
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
-backend/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
 
 # Database
-backend/tickets.db
-backend/tickets.db-journal
+tickets.db
+tickets.db-journal
 
 # Build outputs
-frontend/dist/
-frontend/build/
-backend/dist/
-backend/build/
+dist/
+build/
+dist/
+build/
 
 # Logs
 *.log
@@ -86,7 +86,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public
 
 # Storybook build outputs
 .out
@@ -122,8 +122,8 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# lib/
+# lib64/
 parts/
 sdist/
 var/

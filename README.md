@@ -1,209 +1,149 @@
 # IT Help Desk Voice Bot
 
-A real-time IT Help Desk Voice Bot that handles support calls through natural voice conversations using LiveKit, AI models, and a modern web interface.
+A real-time IT Help Desk Voice Bot that handles support calls through natural voice conversations using LiveKit Cloud and AI models.
 
-## Features
+## 🎯 Features
 
-- 🎤 Real-time voice conversation using LiveKit
-- 🤖 AI-powered conversation handling (STT → LLM → TTS)
-- 📋 Automatic ticket creation and management
-- 💰 Fixed pricing for 4 supported IT issues
-- ✏️ Ability to edit details before confirmation
-- 🌐 Modern React frontend with shadcn/ui
+- 🎤 **Real-time voice conversation** using LiveKit Cloud
+- 🤖 **AI-powered conversation** (STT → LLM → TTS pipeline)
+- 💰 **Fixed pricing** for 4 supported IT issues
+- 🌐 **Modern React frontend** with shadcn/ui
+- ☁️ **Cloud-based deployment** (no local server needed)
 
-## Supported IT Issues & Pricing
+## 📋 Supported IT Issues & Pricing
 
-- Wi-Fi not working: $20
-- Email login issues (password reset): $15
-- Slow laptop performance (CPU change): $25
-- Printer problems (power plug change): $10
+| Issue | Price | Description |
+|-------|-------|-------------|
+| Wi-Fi problems | $20 | Network connectivity issues |
+| Email login issues | $15 | Password reset and login problems |
+| Slow laptop performance | $25 | CPU upgrade and optimization |
+| Printer problems | $10 | Hardware and driver issues |
 
-## Architecture
-
-```
-[ React Frontend ] (Vercel)
-         |
-         v
-  [ LiveKit Cloud ]  <--- Real-time audio streaming
-         |
-         v
-  [ Python Backend ] (Railway)
-         |
-         v
-  [ SQLite Database ] (Ticket storage)
-```
-
-## Tech Stack
-
-### Backend
-- Python with LiveKit Agents SDK
-- Hugging Face Whisper (Speech-to-Text)
-- Hugging Face Mistral-7B (Language Model)
-- Coqui XTTS (Text-to-Speech)
-- SQLite (Ticket database)
-- FastAPI (Token endpoint)
-
-### Frontend
-- React with TypeScript
-- shadcn/ui components
-- LiveKit Client SDK
-- Tailwind CSS
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- Python 3.9+
-- LiveKit Cloud account (free trial available)
+- LiveKit Cloud account (free)
+- API keys for Groq, Deepgram, and Cartesia
 
-### Installation
+### 1. Get API Keys
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd it-help-desk-bot
-```
+**Groq (Free LLM):**
+- Go to [console.groq.com](https://console.groq.com)
+- Sign up (no credit card required)
+- Create API key
 
-2. Install all dependencies:
-```bash
-npm run install:all
-```
+**Deepgram (Speech-to-Text):**
+- Go to [deepgram.com](https://deepgram.com)
+- Sign up and get API key
 
-3. Set up environment variables:
-```bash
-# Copy example env files
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env.local
-```
+**Cartesia (Text-to-Speech):**
+- Go to [cartesia.ai](https://cartesia.ai)
+- Sign up and get API key
 
-4. Get your LiveKit Cloud credentials and configure them in `backend/.env`:
-   - Go to [LiveKit Cloud](https://cloud.livekit.io/)
-   - Create a new project or use existing one
-   - Copy your Project URL, API Key, and API Secret
-   - Update `backend/.env` with your credentials:
+**LiveKit Cloud:**
+- Go to [cloud.livekit.io](https://cloud.livekit.io)
+- Create project and get credentials
+
+### 2. Configure Secrets
+
+Create `backend/secrets.env`:
 ```env
+# LiveKit Cloud Configuration
 LIVEKIT_URL=wss://your-project.livekit.cloud
-LIVEKIT_API_KEY=your-api-key
-LIVEKIT_API_SECRET=your-api-secret
+LIVEKIT_API_KEY=your_api_key
+LIVEKIT_API_SECRET=your_api_secret
+
+# AI Provider Configuration
+GROQ_API_KEY=your_groq_key
+DEEPGRAM_API_KEY=your_deepgram_key
+CARTESIA_API_KEY=your_cartesia_key
 ```
 
-5. Start development servers:
+### 3. Deploy Everything
+
+Run the deployment script:
 ```bash
-# Terminal 1: Backend server
-cd backend && source venv/bin/activate && python run_server.py
-
-# Terminal 2: Frontend
-cd frontend && npm run dev
-
-# Terminal 3: LiveKit agent
-cd backend && source venv/bin/activate && python run_agent.py
+./deploy.sh
 ```
 
-This will start:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- LiveKit Agent: Connected to LiveKit Cloud
+This will:
+1. ✅ Deploy the agent to LiveKit Cloud
+2. ✅ Start the React frontend
+3. ✅ Open http://localhost:3000
 
-## Usage
+## 🎮 Usage
 
-1. Open the frontend in your browser
-2. Click "Join Call" to start the voice conversation
-3. Follow the bot's prompts to:
-   - Provide your name and email
-   - Give your phone number and address
-   - Describe your IT issue
-   - Confirm ticket creation
-4. Receive your confirmation number
+1. **Open** http://localhost:3000
+2. **Click** "Start Call" 
+3. **Talk** to the IT Help Desk bot
+4. **Follow** the conversation flow to create support tickets
 
-## Example Conversation
-
-**Bot:** "Welcome to IT Help Desk. May I have your name and email?"
-
-**User:** "I'm Alice, alice@example.com."
-
-**Bot:** "Thanks, Alice. What's your phone number and address?"
-
-**User:** "555-1234, 10 Main Street."
-
-**Bot:** "Got it. What issue are you facing?"
-
-**User:** "My laptop is slow."
-
-**Bot:** "That's a supported issue. The service fee is $25. Should I create a ticket?"
-
-**User:** "Yes."
-
-**Bot:** "Ticket created. Your confirmation number is 42. You'll get a confirmation at alice@example.com. Thank you!"
-
-## Project Structure
+## 🏗️ Architecture
 
 ```
-it-help-desk-bot/
-├── frontend/           # React frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   └── lib/
-│   ├── package.json
-│   └── ...
-├── backend/            # Python backend
-│   ├── app.py         # FastAPI server
-│   ├── agent.py       # LiveKit agent
-│   ├── models.py      # Database models
-│   ├── tools.py       # Bot tools (create_ticket, edit_ticket)
-│   ├── requirements.txt
-│   └── ...
-├── package.json       # Root package.json
-└── README.md
+[ React Frontend ] ←→ [ LiveKit Cloud ] ←→ [ Python Agent ]
+     (Port 3000)         (Real-time)         (Groq + Deepgram + Cartesia)
 ```
 
-## Deployment
+## 🔧 Manual Setup (Alternative)
 
-### Frontend (Vercel)
-1. Connect your GitHub repository to Vercel
-2. Set build command: `cd frontend && npm run build`
-3. Set output directory: `frontend/dist`
-4. Add environment variables for LiveKit configuration
+If you prefer manual setup:
 
-### Backend (Railway)
-1. Connect your GitHub repository to Railway
-2. Set start command: `cd backend && python app.py`
-3. Add environment variables for LiveKit and database configuration
-4. Enable persistent volume for SQLite database
-
-## Development
-
-### Backend Development
 ```bash
+# Deploy agent
 cd backend
-python app.py
-```
+lk agent deploy --secrets-file secrets.env
 
-### Frontend Development
-```bash
-cd frontend
+# Start frontend  
+cd ../frontend
+npm install
 npm run dev
 ```
 
-### Running Tests
-```bash
-# Backend tests
-cd backend
-python -m pytest
+## 📁 Project Structure
 
-# Frontend tests
-cd frontend
-npm run test
+```
+it-help-desk/
+├── backend/                    # Python agent (deployed to LiveKit Cloud)
+│   ├── src/                   # Agent source code (logic only)
+│   │   ├── agent.py          # Main agent logic
+│   │   ├── models.py         # Database models
+│   │   └── tools.py          # Agent tools
+│   ├── config/               # Configuration files
+│   │   └── agent_instructions.py # Agent prompts & settings
+│   ├── secrets.env           # API keys (not committed)
+│   └── Dockerfile            # For deployment
+├── frontend/                  # Official LiveKit React starter
+│   ├── app/                  # Next.js app directory
+│   ├── components/           # React components
+│   └── .env.local           # Frontend config (auto-created)
+├── deploy.sh                 # One-click deployment script
+└── README.md                # This file
 ```
 
-## Contributing
+## 🆘 Troubleshooting
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+**Agent not responding?**
+- Check `lk agent logs` for errors
+- Verify API keys in `backend/secrets.env`
 
-## License
+**Frontend not connecting?**
+- Ensure agent is deployed: `lk agent status`
+- Check browser console for errors
+
+**No audio?**
+- Allow microphone permissions in browser
+- Check if agent is running: `lk agent status`
+
+## 📚 Learn More
+
+- [LiveKit Agents Documentation](https://docs.livekit.io/agents/)
+- [LiveKit Cloud](https://cloud.livekit.io/)
+- [Groq API](https://console.groq.com/)
+- [Deepgram API](https://deepgram.com/)
+- [Cartesia API](https://cartesia.ai/)
+
+## 📄 License
 
 MIT License - see LICENSE file for details.
