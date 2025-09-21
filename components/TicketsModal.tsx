@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 type Ticket = {
-  id: number;
+  _id: string;
   name: string;
   email: string;
   phone: string;
@@ -87,8 +87,8 @@ export default function TicketsModal({ open, onClose }: TicketsModalProps) {
                   </tr>
                 )}
                 {tickets.map((t) => (
-                  <tr key={t.id} className="border-b last:border-0">
-                    <td className="p-2 align-top">{t.id}</td>
+                  <tr key={t._id} className="border-b last:border-0">
+                    <td className="p-2 align-top">{t._id.slice(-6)}</td>
                     <td className="p-2 align-top">{t.name}</td>
                     <td className="p-2 align-top">{t.email}</td>
                     <td className="p-2 align-top">{t.phone}</td>

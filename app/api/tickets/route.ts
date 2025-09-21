@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
-import { identifyIssue } from '../../../lib/issues';
-import { createTicket, listTickets } from '../../../lib/ticketStore';
+import { getCollection } from '../../../lib/mongodb';
+import { identifyIssue, type Ticket } from '../../../lib/models';
 
 export async function GET() {
-  console.log('[API] GET /api/tickets');
-  const tickets = listTickets();
-  return NextResponse.json({ success: true, tickets });
+  try {
+    console.log('[API] GET /api/tickets');
+    const collection = await getCollection('tickets');
+    const tickets = await collection.find({}).sort({ created_at: -1 }).toArray();
+    console.log('[API] Found tickets:', tickets.length);
+    return NextResponse.json({ success: true, tickets });
+  } catch (error) {
+    console.error('[API] GET /api/tickets error:', error);
+    return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
@@ -25,15 +32,16 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error:
-            "Unsupported issue. We handle Wi‑Fi problems ($20), Email login issues ($15), Slow laptop performance ($25), and Printer problems ($10).",
+          error: "Unsupported issue. We handle Wi‑Fi problems ($20), Email login issues ($15), Slow laptop performance ($25), and Printer problems ($10).",
         },
         { status: 400 },
       );
     }
 
+    const collection = await getCollection('tickets');
     const confirmation_number = Math.floor(10000 + Math.random() * 90000);
-    const { id } = createTicket({
+    
+    const ticket: Omit<Ticket, '_id'> = {
       name,
       email,
       phone,
@@ -41,11 +49,15 @@ export async function POST(req: Request) {
       issue: issue.description,
       price: issue.price,
       confirmation_number,
-    });
+      created_at: new Date(),
+    };
+
+    const result = await collection.insertOne(ticket);
+    console.log('[API] Ticket created:', result.insertedId);
 
     return NextResponse.json({
       success: true,
-      ticket_id: id,
+      ticket_id: result.insertedId.toString(),
       confirmation_number,
       email,
       issue: issue.description,

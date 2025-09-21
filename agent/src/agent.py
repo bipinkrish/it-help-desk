@@ -43,17 +43,16 @@ class ITHelpDeskAssistant(Agent):
         return result
 
     @function_tool()
-    async def edit_ticket(self, context: agents.RunContext, ticket_id: int, field: str, value: str) -> dict:
-        """Edit an ticket's field before confirmation."""
+    async def edit_ticket(self, context: agents.RunContext, field: str, value: str) -> dict:
+        """Edit a ticket field before confirmation (updates draft in memory)."""
         logger.info(f"LLM called edit_ticket function", extra={
             "function": "edit_ticket",
             "parameters": {
-                "ticket_id": ticket_id,
                 "field": field,
                 "value": value
             }
         })
-        result = await self.ticket_tools.edit_ticket(ticket_id, field, value)
+        result = await self.ticket_tools.edit_ticket(field, value)
         logger.info(f"edit_ticket function completed", extra={
             "function": "edit_ticket", 
             "result": result

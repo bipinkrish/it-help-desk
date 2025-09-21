@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { identifyIssue } from '../../../../lib/issues';
-import { updateTicket } from '../../../../lib/ticketStore';
+import { getCollection } from '../../../../lib/mongodb';
+import { identifyIssue } from '../../../../lib/models';
+import { ObjectId } from 'mongodb';
 
 export async function POST(req: Request) {
   try {
@@ -28,8 +29,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Invalid field' }, { status: 400 });
     }
 
-    const ok = updateTicket(ticket_id, updates);
-    if (!ok) {
+    const collection = await getCollection('tickets');
+    const result = await collection.updateOne(
+      { _id: new ObjectId(ticket_id) },
+      { $set: updates }
+    );
+
+    if (result.modifiedCount === 0) {
       return NextResponse.json({ success: false, error: 'Update failed' }, { status: 500 });
     }
 

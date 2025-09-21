@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findTicket } from '../../../../lib/ticketStore';
+import { getCollection } from '../../../../lib/mongodb';
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +11,13 @@ export async function POST(req: Request) {
       confirmation_number: number;
     };
 
-    const ticket = findTicket(name, email, confirmation_number);
+    const collection = await getCollection('tickets');
+    const ticket = await collection.findOne({
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      email: { $regex: new RegExp(`^${email}$`, 'i') },
+      confirmation_number: confirmation_number
+    });
+
     if (!ticket) {
       return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
     }

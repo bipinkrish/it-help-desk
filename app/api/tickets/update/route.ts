@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { identifyIssue } from '../../../../lib/issues';
-import { findTicket, updateTicket } from '../../../../lib/ticketStore';
+import { getCollection } from '../../../../lib/mongodb';
+import { identifyIssue } from '../../../../lib/models';
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +14,13 @@ export async function POST(req: Request) {
       value: string;
     };
 
-    const ticket = findTicket(name, email, confirmation_number);
+    const collection = await getCollection('tickets');
+    const ticket = await collection.findOne({
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      email: { $regex: new RegExp(`^${email}$`, 'i') },
+      confirmation_number: confirmation_number
+    });
+
     if (!ticket) {
       return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
     }
@@ -35,12 +41,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Invalid field' }, { status: 400 });
     }
 
-    const ok = updateTicket(ticket.id, updates);
-    if (!ok) {
+    const result = await collection.updateOne(
+      { _id: ticket._id },
+      { $set: updates }
+    );
+
+    if (result.modifiedCount === 0) {
       return NextResponse.json({ success: false, error: 'Update failed' }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, field, value, ticket_id: ticket.id, message: `Updated ${field}` });
+    return NextResponse.json({ success: true, field, value, ticket_id: ticket._id.toString(), message: `Updated ${field}` });
   } catch (e) {
     console.error('[API] POST /api/tickets/update error', e);
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 });
