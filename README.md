@@ -28,8 +28,7 @@ A real-time AI-powered IT Help Desk that handles support calls through natural v
 
 **Groq (Free LLM):**
 - Go to [console.groq.com](https://console.groq.com)
-- Sign up (no credit card required)
-- Create API key
+- Sign up and Create API key
 
 **Deepgram (Speech-to-Text and Text-to-Speech):**
 - Go to [deepgram.com](https://deepgram.com)
