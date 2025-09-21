@@ -7,7 +7,7 @@ import os
 import aiohttp
 
 logger = logging.getLogger(__name__)
-
+base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
 
 class TicketTools:
     """Tools for ticket management."""
@@ -40,7 +40,6 @@ class TicketTools:
                 }
             
             # Send to Next.js API
-            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
             url = f"{base_url}/tickets"
             payload = {
                 "name": name,
@@ -68,14 +67,6 @@ class TicketTools:
     async def edit_ticket(self, ticket_id: int, field: str, value: str) -> Dict[str, Any]:
         """
         Edit a ticket field before confirmation.
-        
-        Args:
-            ticket_id: ID of the ticket to edit
-            field: Field to update (name, email, phone, address, issue)
-            value: New value for the field
-            
-        Returns:
-            Dict containing success status and updated information
         """
         try:
             # Validate field
@@ -98,7 +89,6 @@ class TicketTools:
                 updates["issue"] = issue_info["description"]
                 updates["price"] = issue_info["price"]
             
-            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
             url = f"{base_url}/tickets/update-by-id"
             payload = {"ticket_id": ticket_id, "field": field, "value": value}
             logger.info(f"[HTTP] POST {url} payload={payload}")
@@ -157,7 +147,6 @@ class TicketTools:
         Look up an existing ticket by customer details and confirmation number.
         """
         try:
-            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
             url = f"{base_url}/tickets/lookup"
             payload = {"name": name, "email": email, "confirmation_number": confirmation_number}
             logger.info(f"[HTTP] POST {url} payload={payload}")
@@ -181,7 +170,6 @@ class TicketTools:
         Update an existing ticket field.
         """
         try:
-            base_url = os.getenv("API_BASE_URL", "http://localhost:3000/api")
             url = f"{base_url}/tickets/update"
             payload = {"name": name, "email": email, "confirmation_number": confirmation_number, "field": field, "value": value}
             logger.info(f"[HTTP] POST {url} payload={payload}")
